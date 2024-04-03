@@ -1,42 +1,37 @@
-import React, { useState } from "react";
-import { TodoCard } from "./TodoCard";
+import React from "react";
+import { $post, setPost, submit } from "./effector/models";
+import { useUnit } from "effector-react";
 
 export const TodoList = () => {
-  const [todos, setTodos] = useState<string[]>([]);
-  const [newTodo, setNewTodo] = useState("");
+  // const [todos, setTodos] = useState<string[]>([]);
+  // const [newTodo, setNewTodo] = useState("");
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setNewTodo(event.target.value);
+    setPost(event.target.value);
   }
+  const [post] = useUnit([$post]);
+  console.log(post);
 
   function addTodo(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!newTodo.trim()) {
-      setTodos([...todos, newTodo.trim()]);
-      setNewTodo("");
-    }
+    submit();
   }
 
-  function deleteTodo(name: string) {
-    setTodos(todos.filter((todo) => todo !== name));
-  }
+  // function deleteTodo(name: string) {
+  //   setTodos(todos.filter((todo) => todo !== name));
+  // }
 
   return (
     <div className="container">
       <form onSubmit={addTodo}>
         <input
           type="text"
-          placeholder="Запишите  что хотите сделать"
-          value={newTodo}
+          placeholder="Запишите  что хотите отравить"
+          value={post.body}
           onChange={handleInputChange}
         />
         <button type="submit">Добавить</button>
       </form>
-      <ul className="list_Container">
-        {todos.map((todo, index) => (
-          <TodoCard todo={todo} key={index} delete={deleteTodo} />
-        ))}
-      </ul>
     </div>
   );
 };
