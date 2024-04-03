@@ -1,13 +1,19 @@
 // import { useState } from "react";/
 
+import { setId } from "./effector/models";
+
 type TodoCardProps = {
   userId?: number;
-  id?: number;
-  title?: string;
+  id: number;
+  title: string;
   body?: string;
 };
 
-export const TodoCard = ({ title }: TodoCardProps) => {
+function delelPost(id: number) {
+  setId(id);
+}
+
+export const TodoCard = ({ title, id }: TodoCardProps) => {
   return (
     <li className="card ">
       <p>TodoCard {title}</p>
@@ -17,9 +23,14 @@ export const TodoCard = ({ title }: TodoCardProps) => {
       >
         Donne
       </button> */}
-      {/* <button className="del_button" onClick={() => deleteTodo(todo)}>
+      <button
+        className="del_button"
+        onClick={() => {
+          delelPost(id);
+        }}
+      >
         Delete
-      </button> */}
+      </button>
     </li>
   );
 };

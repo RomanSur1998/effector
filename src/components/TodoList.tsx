@@ -14,12 +14,8 @@ export const TodoList = () => {
 
   function addTodo(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    submit();
+    submit(post);
   }
-
-  // function deleteTodo(name: string) {
-  //   setTodos(todos.filter((todo) => todo !== name));
-  // }
 
   return (
     <div className="container">

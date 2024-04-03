@@ -1,7 +1,9 @@
 import { createStore, createEvent, sample, createEffect } from "effector";
 import { api } from "../../api";
 import { IPost } from "../../types";
-// import { and, not, or } from "patronum";
+import { debounce } from "patronum";
+import { either } from "patronum";
+import { and, not, or } from "patronum";
 
 export const chanegeEmail = createEvent<string>();
 export const changePassword = createEvent<string>();
@@ -19,37 +21,38 @@ export const $post = createStore<IPost>({
   userId: 1,
 });
 
-const getPostFx = createEffect(async () => {
-  try {
-    const response = await api.getData();
-    return response.data;
-  } catch (error) {
-    throw new Error("Запрос не прошел");
-  }
-});
+export const $id = createStore<number>(0);
+const getPostFx = createEffect(api.getData);
+const sendPostFx = createEffect(api.sendPost);
 
-const sendPostFx = createEffect(async ($post: IPost) => {
-  try {
-    const response = await api.sendPost();
-    return response;
-  } catch (error) {
-    throw new Error("Запрос не прошел");
-  }
-});
-export const submit = createEvent();
+const deletePost = createEffect(api.deletePost);
+export const setId = createEvent<number>();
+export const submit = createEvent<IPost>();
 export const getPostsEvent = createEvent();
 
-sample({ clock: chanegeEmail, target: $email });
+sample({
+  clock: chanegeEmail,
+  target: $email,
+});
 sample({ clock: changePassword, target: $password });
 sample({ clock: getPostsEvent, target: getPostFx });
-sample({ clock: getPostFx.doneData, target: $list });
+sample({
+  clock: getPostFx.doneData,
+  fn: (clock) => {
+    return clock.data;
+  },
+  target: $list,
+});
 sample({ clock: submit, target: sendPostFx });
+sample({ clock: setId, target: $id });
+sample({ clock: $id, target: deletePost });
 
 sample({
+  source: $post,
   clock: setPost,
-  fn: (newPostData) => ({
-    ...$post.getState(),
-    body: newPostData,
+  fn: (source, clock) => ({
+    ...source,
+    body: clock,
   }),
   target: $post,
 });
@@ -64,8 +67,15 @@ sample({
 
 // ? PATRONUM
 
-// const $verified = and($email, $password);
-// const $oneof = or($email, $password);
-// const $notof = not($email);
+const $verified = and($email, $password);
+const $oneof = or($email, $password);
+const $notof = not($email);
+
+const newDeb = debounce({
+  source: $id,
+  timeout: 500,
+});
+
+sample({ clock: newDeb, target: $id });
 
 // ? PATRONUM

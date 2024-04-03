@@ -7,7 +7,10 @@ type Props = {};
 export const NewGate = createGate();
 
 export const GateComponent = (props: Props) => {
-  const newList = useList($list, ({ title }) => <TodoCard title={title} />);
+  const newList = useList($list, ({ title, id }) => (
+    <TodoCard title={title} id={id} />
+    // <li className="card ">{title}</li>
+  ));
   useGate(NewGate, props);
   return (
     <div>

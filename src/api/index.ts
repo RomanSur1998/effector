@@ -1,4 +1,5 @@
 import axios from "axios";
+import { IPost } from "../types";
 
 export const api = {
   getData: async () => {
@@ -11,15 +12,11 @@ export const api = {
       throw new Error("Failed to fetch data");
     }
   },
-  sendPost: async () => {
+  sendPost: async (data: IPost) => {
     try {
       const response = await axios.post(
         "https://jsonplaceholder.typicode.com/posts",
-        {
-          title: "foo",
-          body: "bar",
-          userId: 1,
-        },
+        data,
         {
           headers: {
             "Content-Type": "application/json",
